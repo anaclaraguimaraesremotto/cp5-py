@@ -1,25 +1,50 @@
-import oracledb
+import cx_Oracle
 import traceback
 
-def insert_cardapio(prato):
-    insert = '''insert into cardapio( id, nome_prato, ingredientes, valor)
-                values(:id, :nome_prato, :ingredientes, :valor)'''
-    
+def recupera_cardapio():
+    sql = "SELECT * FROM cardapio"
     try:
-        with oracledb.connect(
-            user="rm97898", password="210904",
+        with cx_Oracle.connect(
+            user="rm97898", password="21092004", 
             dsn="oracle.fiap.com.br/orcl"
         ) as conexao:
-
             with conexao.cursor() as cur:
-                cur.execute(insert, prato)
-            conexao.commit()
-
+                cur.execute(sql)
+                return cur.fetchall()
     except Exception as erro:
         traceback.print_exc()
         raise erro
-    
+
+def insere_cardapio(prato):
+    ins = '''INSERT INTO cardapio(id, nome_prato, ingredientes, preco)
+             VALUES(:id, :nome_prato, :ingredientes, :preco)'''
+    try:
+        with cx_Oracle.connect(
+            user="rm97898", password="21092004", 
+            dsn="oracle.fiap.com.br/orcl"
+        ) as conexao:
+            with conexao.cursor() as cur:
+                cur.execute(ins, prato)
+            conexao.commit()
+    except Exception as erro:
+        traceback.print_exc()
+        raise erro
+
 if __name__ == '__main__':
-    p = {"id": 150, "nome_prato": "misto quente", 
-         "ingredientes": "pão, presunto e queijo", "valor": 13.00}
-    insert_cardapio(p)
+    prato = {
+        "id": 100,
+        "nome_prato": "Nome do Prato",
+        "ingredientes": "Lista de Ingredientes",
+        "preco": 20.50,
+    }
+    
+    try:
+        insere_cardapio(prato)
+        print("Prato inserido com sucesso.")
+    except Exception as erro:
+        print("Erro ao inserir o prato:", erro)
+    
+    cardapios = recupera_cardapio()
+    print("Pratos no banco de dados:")
+    for prato in cardapios:
+        print(prato)

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Restaurante</title>
+</head>
+<body>
+    <h1>Sistema de Cardapio para Restaurantes</h1>
+    <button id="load">Load cardapio</button>
+    <div id="dados"></div>
+    
+    <script>
+        botao = document.getElementById("load");
+        botao.addEventListener("click", function(){
+            url = "http://127.0.0.1:5000/cardapio";
+            fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    div = document.getElementById("dados");
+                    tabela = "<table>";
+                    for (var i = 0; i < data.length; i++) {
+                        c = data[i];
+                        tabela = tabela + "<tr><td>" + c.nome_prato + "</td>" + "<td>" + c.ingredientes
+                                        + "</td>" + "<td>" + c.preco + "</td></tr>";
+                    }
+                    tabela += "</table>";
+                    div.innerHTML = tabela;
+                });
+        });
+    </script>
+</body>
+</html>
