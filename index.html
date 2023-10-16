@@ -7,29 +7,55 @@
     <title>API Restaurante</title>
 </head>
 <body>
-    <h1>Sistema de Cardapio para Restaurantes</h1>
+    <h1>Sistema de Cardápio para Restaurantes</h1>
     <button id="load">Load cardapio</button>
     <div id="dados"></div>
     
     <script>
-        botao = document.getElementById("load");
-        botao.addEventListener("click", function(){
-            alert("Clicou no botão");
+        function altera(id) {
+            alert("Alterar prato com ID: " + id);
+            window.location.href = `edit_prato.html?id=${id}`;
+        }
+
+        function deleta(id) {
+            alert("Deletar prato com ID: " + id);
+            fetch(`http://127.0.0.1:5000/cardapio/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    alert("Prato deletado com sucesso.");
+                    
+                    carregarCardapio();
+                } else {
+                    alert("Erro ao deletar o prato.");
+                }
+            });
+        }
+
+        function carregarCardapio() {
             url = "http://127.0.0.1:5000/cardapio";
             fetch(url)
                 .then((response) => response.json())
                 .then((data) => {
                     div = document.getElementById("dados");
                     tabela = "<table>";
-                        for(var i = 0; i < data.length; i++) {
-                            c = data[i]
-                            tabela = tabela + "<tr><td>" + c.nome_prato + "<td>" + c.ingrediente + "<td>" + c.preco + "<td> <input onclick=altera(" + c.id +") type=button value=altera >" + "<tr>";
-                        }
-                        tabela += "</table>"
-                        div.innerHTML = tabela;
-                })
+                    for(var i = 0; i < data.length; i++) {
+                        c = data[i];
+                        tabela = tabela + "<tr><td>" + c.nome_prato + "<td>" + c.ingredientes + 
+                            "<td>" + c.preco + "<td> <button onclick=altera(" + c.id +")>Alterar</button>" + 
+                                " <button onclick=deleta(" + c.id +")>Deletar</button></tr>";
+                    }
+                    tabela += "</table>";
+                    div.innerHTML = tabela;
+                });
+        }
+
+        botao = document.getElementById("load");
+        botao.addEventListener("click", function(){
+            alert("Clicou no botão");
+            carregarCardapio();
         });
     </script>
-
 </body>
 </html>

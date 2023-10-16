@@ -1,10 +1,10 @@
-import cx_Oracle
+import oracledb
 import traceback
 
 def recupera_cardapio():
     sql = "SELECT * FROM cardapio"
     try:
-        with cx_Oracle.connect(
+        with oracledb.connect(
             user="rm97898", password="21092004", 
             dsn="oracle.fiap.com.br/orcl"
         ) as conexao:
@@ -19,7 +19,7 @@ def insere_cardapio(prato):
     ins = '''INSERT INTO cardapio(id, nome_prato, ingredientes, preco)
              VALUES(:id, :nome_prato, :ingredientes, :preco)'''
     try:
-        with cx_Oracle.connect(
+        with oracledb.connect(
             user="rm97898", password="21092004", 
             dsn="oracle.fiap.com.br/orcl"
         ) as conexao:
@@ -30,21 +30,37 @@ def insere_cardapio(prato):
         traceback.print_exc()
         raise erro
 
-if __name__ == '__main__':
-    prato = {
-        "id": 100,
-        "nome_prato": "Nome do Prato",
-        "ingredientes": "Lista de Ingredientes",
-        "preco": 20.50,
-    }
-    
+def delete_cardapio(id):
+    delete_sql = "DELETE FROM cardapio WHERE id = :id"
     try:
-        insere_cardapio(prato)
-        print("Prato inserido com sucesso.")
+        with oracledb.connect(
+            user="rm97898", password="21092004",
+            dsn="oracle.fiap.com.br/orcl"
+        ) as conexao:
+            with conexao.cursor() as cur:
+                cur.execute(delete_sql, {"id": id})
+            conexao.commit()
     except Exception as erro:
-        print("Erro ao inserir o prato:", erro)
-    
-    cardapios = recupera_cardapio()
-    print("Pratos no banco de dados:")
-    for prato in cardapios:
-        print(prato)
+        traceback.print_exc()
+        raise erro
+
+def update_cardapio(id, prato):
+    update_sql = '''
+        UPDATE cardapio
+        SET nome_prato = :nome_prato,
+            ingredientes = :ingredientes,
+            preco = :preco
+        WHERE id = :id
+    '''
+    try:
+        with oracledb.connect(
+            user="rm97898", password="21092004",
+            dsn="oracle.fiap.com.br/orcl"
+        ) as conexao:
+            with conexao.cursor() as cur:
+                prato["id"] = id
+                cur.execute(update_sql, prato)
+            conexao.commit()
+    except Exception as erro:
+        traceback.print_exc()
+        raise erro
