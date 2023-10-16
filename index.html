@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>API Restaurante</title>
 </head>
 <body>
@@ -13,21 +14,22 @@
     <script>
         botao = document.getElementById("load");
         botao.addEventListener("click", function(){
+            alert("Clicou no botão");
             url = "http://127.0.0.1:5000/cardapio";
             fetch(url)
                 .then((response) => response.json())
                 .then((data) => {
                     div = document.getElementById("dados");
                     tabela = "<table>";
-                    for (var i = 0; i < data.length; i++) {
-                        c = data[i];
-                        tabela = tabela + "<tr><td>" + c.nome_prato + "</td>" + "<td>" + c.ingredientes
-                                        + "</td>" + "<td>" + c.preco + "</td></tr>";
-                    }
-                    tabela += "</table>";
-                    div.innerHTML = tabela;
-                });
+                        for(var i = 0; i < data.length; i++) {
+                            c = data[i]
+                            tabela = tabela + "<tr><td>" + c.nome_prato + "<td>" + c.ingrediente + "<td>" + c.preco + "<td> <input onclick=altera(" + c.id +") type=button value=altera >" + "<tr>";
+                        }
+                        tabela += "</table>"
+                        div.innerHTML = tabela;
+                })
         });
     </script>
+
 </body>
 </html>
